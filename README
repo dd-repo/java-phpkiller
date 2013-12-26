@@ -1,0 +1,4 @@
+Kills a process after a while
+
+To compile from Windows, run "compile phpkiller"
+with java 7 and proper classpath.
