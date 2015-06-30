@@ -88,13 +88,16 @@ public class Killer
 
         private void checkProcesses() throws ExecutionException
         {
-                Vector<String> ps = this.exec("ps aux | grep " + Killer.grep + " | grep -v grep | grep -v java");
+                Vector<String> ps = this.exec("ps auxn |awk '$11 == \"" + Killer.grep + "\"'");
 
                 Vector<Integer> current_process = new Vector<Integer>();
                 for(String p : ps)
                 {
-                        String[] info = p.replaceAll("\\s+", ";").split(";", 5);
-                        //System.out.println("Process : user="+info[0]+" pid="+info[1]+" cpu="+info[2]+" ram="+info[3]);
+                        String[] info = p.trim().replaceAll("\\s+", ";").split(";", 5);
+                        if( debug )
+                        {
+                                System.out.println("Process : user="+info[0]+" pid="+info[1]+" cpu="+info[2]+" ram="+info[3]);
+                        }
                         if( Killer.ignore.contains(info[0]) )
                                 continue;
 
