@@ -24,7 +24,7 @@ public class Killer
 
                 try
                 {
-                        Killer.cpu = Integer.parseInt(this.exec("cat /proc/cpuinfo  |grep processor |wc -l").firstElement());
+                        Killer.cpu = Integer.parseInt(this.exec("cat /proc/cpuinfo |grep ^processor |wc -l").firstElement());
                 }
                 catch(ExecutionException ee)
                 {
