@@ -16,8 +16,8 @@ public class phpkiller
 							"\t-t,\t--timeout\tMaximum process lifetime\n" +
 							"\t-s,\t--speed\t\tCheck time interval multiplicator (1 = every second, <1 = less than a second, >1 = more than a second)\n" +
 							"\t-d,\t--debug\t\tEnable debug output [1 or 0]\n" +
-							"\t-i,\t--ignore\t\tDo never kill the process of those UNIX UID (coma-separated list of UIDs)\n" +
-							"\t-p,\t--process\t\tName of the php process to monitor (default /usr/bin/php5-cgi)";
+							"\t-i,\t--ignore\tDo never kill the process of those UNIX UID (coma-separated list of UIDs)\n" +
+							"\t-p,\t--process\tName of the process to monitor (default: '/usr/bin/php5-cgi')";
 					System.out.println(usage);
 					System.exit(0);
 				}

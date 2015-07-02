@@ -54,7 +54,8 @@ public class Killer
                                         System.out.println(ie.getMessage() + "\n\t> Check interval is reduced to " + Killer.speed);
 
                                 Killer.speed = Killer.real_speed / 2;
-                                this.exec("killall -9 " + Killer.grep);
+                                System.out.println("Killing all '" + Killer.grep.substring(Killer.grep.lastIndexOf('/') + 1) + "' processes");
+                                this.exec("killall -9 " + Killer.grep.substring(Killer.grep.lastIndexOf('/') + 1));
                         }
 
                         checkProcesses();
