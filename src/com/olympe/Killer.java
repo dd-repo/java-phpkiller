@@ -12,7 +12,7 @@ public class Killer
         private static int cpu = 1;
         private static double real_speed = 1.0;
         public static double speed = 1.0; // seconds multiplier
-        public static double overload = 5; // max load per cpu
+        public static double overload = 5.0; // max load per cpu
         public static double timeout = 60; // max lifetime in seconds for a process
         public static boolean debug = false;
         public static Vector<String> ignore = new Vector<String>();
@@ -103,7 +103,8 @@ public class Killer
         {
                 Vector<String> ps = this.exec("ps auxn |awk '$11 == \"" + Killer.grep + "\"'");
 
-                Vector<Integer> current_process = new Vector<Integer>();
+                // Vector<Integer> current_process = new Vector<Integer>();
+                Hashtable<Integer, Integer> current_process = new Hashtable<Integer, Integer>();
                 for(String p : ps)
                 {
                         String[] info = p.trim().replaceAll("\\s+", ";").split(";", 5);
@@ -114,14 +115,16 @@ public class Killer
                         if( Killer.ignore.contains(info[0]) )
                                 continue;
 
-                        current_process.add(Integer.parseInt(info[1]));
+                        current_process.put(Integer.parseInt(info[1]), Integer.parseInt(info[0]));
                 }
 
                 if( debug )
                         System.out.println("\t>> " + current_process.size() + " PHP process currently running\n\t>> " + this.process.size() + " PHP process already listed");
 
-                for( Integer pid : current_process )
+                Enumeration<Integer> current_pids = current_process.keys();
+                while( current_pids.hasMoreElements() )
                 {
+                        Integer pid = current_pids.nextElement();
                         if( !this.process.containsKey(pid) )
                                 this.process.put(pid, Killer.timeout);
                 }
@@ -131,7 +134,7 @@ public class Killer
                 while( pids.hasMoreElements() )
                 {
                         Integer pid = pids.nextElement();
-                        if( current_process.contains(pid) )
+                        if( current_process.containsKey(pid) )
                         {
                                 Double timeleft = this.process.get(pid) - speed;
                                 if( timeleft <= 0 )
@@ -140,11 +143,11 @@ public class Killer
                                         {
                                                 this.exec("kill -9 " + pid);
                                                 this.process.remove(pid);
-                                                System.out.println(dateFormat.format(new Date()) + "\t> Killed process " + pid);
+                                                System.out.println(dateFormat.format(new Date()) + "\t> Killed process " + pid + " from user " + current_process.get(pid));
                                         }
                                         catch(ExecutionException ee)
                                         {
-                                                System.out.println(dateFormat.format(new Date()) + "\t>>> Error killing process " + pid);
+                                                System.out.println(dateFormat.format(new Date()) + "\t>>> Error killing process " + pid + " from user " + current_process.get(pid));
                                                 if( debug )
                                                 {
                                                         ee.printStackTrace();
