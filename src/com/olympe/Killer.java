@@ -127,15 +127,13 @@ public class Killer
                                         {
                                                 this.exec("kill -9 " + pid);
                                                 this.process.remove(pid);
-
-                                                if( debug )
-                                                        System.out.println("\t> Killing process " + pid);
+                                                System.out.println("\t> Killing process " + pid);
                                         }
                                         catch(ExecutionException ee)
                                         {
+                                                System.out.println("Error killing process " + pid);
                                                 if( debug )
                                                 {
-                                                        System.out.println("Error killing process");
                                                         ee.printStackTrace();
                                                 }
                                         }
@@ -183,7 +181,7 @@ public class Killer
                                 return result;
                         else
                         {
-                                String error = "Command return errno : " + status + " ";
+                                String error = "Command '" + command + "' returned error : " + status + " ";
                                 for(String l : result)
                                         error += l + "\r\n";
 
