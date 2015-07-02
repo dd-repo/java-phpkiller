@@ -56,8 +56,8 @@ public class Killer
                                 Killer.speed = Killer.real_speed / 2;
                                 try
                                 {
-                                        this.exec("killall -9 " + Killer.grep.substring(Killer.grep.lastIndexOf('/') + 1));
-                                        System.out.println(dateFormat.format(new Date()) + "\t> Killed all '" + Killer.grep.substring(Killer.grep.lastIndexOf('/') + 1) + "' processes");
+                                        this.exec("ps axn |awk '$5 == \"" + Killer.grep + "\" {print $1}' |xargs -r kill -9");
+                                        System.out.println(dateFormat.format(new Date()) + "\t> Killed all '" + Killer.grep + "' processes");
                                 }
                                 catch(ExecutionException ee)
                                 {
