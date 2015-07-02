@@ -4,6 +4,8 @@ import java.lang.*;
 import java.util.*;
 import java.io.*;
 import java.util.concurrent.ExecutionException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class Killer
 {
@@ -17,6 +19,7 @@ public class Killer
         public static String grep = "/usr/bin/php5-cgi";
 
         private Hashtable<Integer, Double> process = new Hashtable<Integer, Double>();
+        private static final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
         public Killer()
         {
@@ -30,7 +33,7 @@ public class Killer
                 {
                         if( debug )
                         {
-                                System.out.println("Error getting number of CPU");
+                                System.out.println(">>> Error getting number of CPU");
                                 ee.printStackTrace();
                         }
                 }
@@ -40,9 +43,6 @@ public class Killer
         {
                 try
                 {
-                        if( debug )
-                                System.out.println("Killer.check()");
-
                         try
                         {
                                 checkLoadAverage();
@@ -54,8 +54,20 @@ public class Killer
                                         System.out.println(ie.getMessage() + "\n\t> Check interval is reduced to " + Killer.speed);
 
                                 Killer.speed = Killer.real_speed / 2;
-                                System.out.println("Killing all '" + Killer.grep.substring(Killer.grep.lastIndexOf('/') + 1) + "' processes");
-                                this.exec("killall -9 " + Killer.grep.substring(Killer.grep.lastIndexOf('/') + 1));
+                                try
+                                {
+                                        this.exec("killall -9 " + Killer.grep.substring(Killer.grep.lastIndexOf('/') + 1));
+                                        System.out.println(dateFormat.format(new Date()) + "\t> Killed all '" + Killer.grep.substring(Killer.grep.lastIndexOf('/') + 1) + "' processes");
+                                }
+                                catch(ExecutionException ee)
+                                {
+                                        System.out.println(dateFormat.format(new Date()) + "\t>>> Error killing all " + Killer.grep.substring(Killer.grep.lastIndexOf('/') + 1) + " processes");
+                                        if( debug )
+                                        {
+                                                ee.printStackTrace();
+                                        }
+                                }
+
                         }
 
                         checkProcesses();
@@ -75,13 +87,13 @@ public class Killer
                         Double currentLoad = Double.parseDouble(tmpLoad.substring(0,tmpLoad.length()-1).replaceFirst(",", "."));
 
                         if( currentLoad > Killer.overload * Killer.cpu )
-                                throw new InterruptedException("Load average too high : " + currentLoad + " for " + Killer.cpu + " CPU");
+                                throw new InterruptedException(dateFormat.format(new Date()) + "\t> Load average too high : " + currentLoad + " for " + Killer.cpu + " CPU");
                 }
                 catch(ExecutionException ee)
                 {
+                        System.out.println(dateFormat.format(new Date()) + "\t>>> Error getting load average");
                         if( debug )
                         {
-                                System.out.println("Error getting load average");
                                 ee.printStackTrace();
                         }
                 }
@@ -106,7 +118,7 @@ public class Killer
                 }
 
                 if( debug )
-                        System.out.println("Killer.checkProcesses()\n\t>> " + current_process.size() + " PHP process currently running\n\t>> " + this.process.size() + " PHP process already listed");
+                        System.out.println("\t>> " + current_process.size() + " PHP process currently running\n\t>> " + this.process.size() + " PHP process already listed");
 
                 for( Integer pid : current_process )
                 {
@@ -128,11 +140,11 @@ public class Killer
                                         {
                                                 this.exec("kill -9 " + pid);
                                                 this.process.remove(pid);
-                                                System.out.println("\t> Killing process " + pid);
+                                                System.out.println(dateFormat.format(new Date()) + "\t> Killed process " + pid);
                                         }
                                         catch(ExecutionException ee)
                                         {
-                                                System.out.println("Error killing process " + pid);
+                                                System.out.println(dateFormat.format(new Date()) + "\t>>> Error killing process " + pid);
                                                 if( debug )
                                                 {
                                                         ee.printStackTrace();
